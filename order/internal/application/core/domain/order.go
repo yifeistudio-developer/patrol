@@ -18,7 +18,7 @@ type Order struct {
 
 func NewOrder(customerId int64, orderItems []OrderItem) Order {
 	return Order{
-		CreatedAt:  time.Now().Unix(),
+		CreatedAt:  time.Now(),
 		Status:     "PENDING",
 		CustomerId: customerId,
 		OrderItems: orderItems,
