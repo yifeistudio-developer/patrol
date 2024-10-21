@@ -2,9 +2,11 @@ package grpc
 
 import (
 	"fmt"
+	"github.com/yifeistudio-developer/patrol/order/config"
 	"github.com/yifeistudio-developer/patrol/order/internal/ports"
 	"github.com/yifeistudio-developer/wharf/golang/order"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
 )
@@ -28,7 +30,9 @@ func (a Adapter) Run() {
 	grpcServer := grpc.NewServer()
 	order.RegisterOrderServer(grpcServer, a)
 	// configuration
-
+	if config.GetEnv() == "development" {
+		reflection.Register(grpcServer)
+	}
 	if err := grpcServer.Serve(listen); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
