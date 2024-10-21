@@ -4,6 +4,7 @@ go 1.23.0
 
 require (
 	github.com/yifeistudio-developer/wharf/golang/order v1.0.2
+	github.com/yifeistudio-developer/wharf/golang/payment v1.0.0
 	google.golang.org/grpc v1.67.1
 	gorm.io/driver/postgres v1.5.9
 	gorm.io/gorm v1.25.12
