@@ -3,6 +3,8 @@ module github.com/yifeistudio-developer/patrol/order
 go 1.23.0
 
 require (
+	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
+	github.com/sony/gobreaker v1.0.0
 	github.com/yifeistudio-developer/wharf/golang/order v1.0.2
 	github.com/yifeistudio-developer/wharf/golang/payment v1.0.0
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241015192408-796eee8c2d53

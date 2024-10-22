@@ -1,13 +1,53 @@
 package main
 
 import (
+	"errors"
+	"github.com/sony/gobreaker"
 	"github.com/yifeistudio-developer/patrol/order/config"
 	"github.com/yifeistudio-developer/patrol/order/internal/adapters/db"
 	"github.com/yifeistudio-developer/patrol/order/internal/adapters/grpc"
 	"github.com/yifeistudio-developer/patrol/order/internal/adapters/payment"
 	"github.com/yifeistudio-developer/patrol/order/internal/application/core/api"
 	"log"
+	"math/rand"
+	"time"
 )
+
+var cb *gobreaker.CircuitBreaker
+
+func circuitBreaker() {
+	cb = gobreaker.NewCircuitBreaker(gobreaker.Settings{
+		Name:        "demo",
+		MaxRequests: 3,
+		Timeout:     4 * time.Second,
+		ReadyToTrip: func(counts gobreaker.Counts) bool {
+			failureRatio := float64(counts.TotalFailures) / float64(counts.Requests)
+			return failureRatio >= 0.6
+		},
+		OnStateChange: func(name string, from gobreaker.State, to gobreaker.State) {
+			log.Printf("State change %s from %s to %s", name, from, to)
+		},
+	})
+	execute, err := cb.Execute(func() (interface{}, error) {
+		res, isErr := isError()
+		if isErr {
+			return nil, errors.New("error")
+		}
+		return res, nil
+	})
+	if err != nil {
+		log.Fatalf("Circuit breaker error %v", err)
+	} else {
+		log.Printf("Circuirt breaker result: %v", execute)
+	}
+}
+
+func isError() (int, bool) {
+	min := 10
+	max := 30
+	result := rand.Intn(max-min) + min
+	return result, result != 20
+}
 
 func main() {
 	dbAdapter, err := db.NewAdapter(config.GetDataSourceURL())
