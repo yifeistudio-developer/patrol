@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"github.com/sony/gobreaker"
 	"github.com/yifeistudio-developer/patrol/order/config"
@@ -8,8 +10,10 @@ import (
 	"github.com/yifeistudio-developer/patrol/order/internal/adapters/grpc"
 	"github.com/yifeistudio-developer/patrol/order/internal/adapters/payment"
 	"github.com/yifeistudio-developer/patrol/order/internal/application/core/api"
+	"google.golang.org/grpc/credentials"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -47,6 +51,27 @@ func isError() (int, bool) {
 	max := 30
 	result := rand.Intn(max-min) + min
 	return result, result != 20
+}
+
+func getTlsCredentials() (credentials.TransportCredentials, error) {
+	serverCert, err := tls.LoadX509KeyPair("", "")
+	if err != nil {
+		// handle load error
+	}
+	certPool := x509.NewCertPool()
+	caCert, err := os.ReadFile("")
+	if err != nil {
+		// handle read file error
+	}
+	if ok := certPool.AppendCertsFromPEM(caCert); !ok {
+		return nil, errors.New("failed to append ca cert")
+	}
+	return credentials.NewTLS(
+		&tls.Config{
+			ClientAuth:   tls.RequireAnyClientCert,
+			Certificates: []tls.Certificate{serverCert},
+			ClientCAs:    certPool,
+		}), nil
 }
 
 func main() {
