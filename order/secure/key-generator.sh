@@ -11,3 +11,6 @@ openssl req -newkey rsa:2096 -keyout server-key.pem -out server-req.pem -subj "/
 
 #sign
 openssl x509 -req -in server-req.pem -days 60 -CA  ca-cert.pem -CAkey ca-key.pem -CAcreateserial -out server-cert.pem -extfile server-ext.cnf -sha256
+
+#generate client keys
+openssl req -newkey rsa:2096 -keyout client-key.pem -out client-req.pem -subj "/C=ZH/ST=ZHEJIANG/L=HANGZHOU/O=patrol/OU=OrderService/CN=*.yifeistudio.com/emailAddress=develop@yifeistudio.com" -nodes -sha256
